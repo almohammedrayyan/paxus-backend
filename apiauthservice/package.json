@@ -1,0 +1,47 @@
+{
+  "name": "apicourseservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start-build": "node dist/index.js",
+    "start": "npm run build && node dist/index.js",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "seed:dev-admin": "ts-node --transpile-only scripts/seedDevAdmin.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sonar": "sonar-scanner"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "firebase-admin": "^14.5.0",
+    "helmet": "^8.3.0",
+    "http-status": "^2.1.0",
+    "joi": "^18.2.9",
+    "jsonwebtoken": "^9.0.3",
+    "moment": "^2.31.0",
+    "mongoose": "^9.10.1",
+    "redis": "^6.2.1",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.5.1",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}
