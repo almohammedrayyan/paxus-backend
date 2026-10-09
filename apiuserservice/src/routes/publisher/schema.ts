@@ -12,6 +12,13 @@ const create = {
   }),
 };
 
+const getById = {
+  params: Joi.object().keys({
+    _id: Joi.string().hex().length(24).required(),
+  }),
+};
+
 export = {
   create,
+  getById,
 };

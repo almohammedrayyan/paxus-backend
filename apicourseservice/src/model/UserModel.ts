@@ -28,9 +28,17 @@ const schema = new mongoose.Schema(
     phone: {
       type: String,
     },
+    password: {
+      type: String,
+      required: true,
+      select: false,
+    },
     role: {
       type: String,
       enum: ROLE,
+    },
+    isActive: {
+      type: Boolean,
     },
   },
   {

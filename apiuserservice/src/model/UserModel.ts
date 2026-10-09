@@ -37,6 +37,9 @@ const schema = new mongoose.Schema(
       type: String,
       enum: ROLE,
     },
+    isActive: {
+      type: Boolean,
+    },
   },
   {
     timestamps: {

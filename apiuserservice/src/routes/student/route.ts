@@ -23,6 +23,10 @@ route.post(
   validateSchema(schema.create),
   controller.createStudentProfile,
 );
-
+route.get(
+  END_POINT.getById,
+  validateSchema(schema.getById),
+  controller.getById,
+);
 // exports
 export default route;

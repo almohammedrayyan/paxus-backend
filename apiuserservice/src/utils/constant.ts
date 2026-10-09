@@ -1,7 +1,7 @@
 enum ROLE {
   student = "student",
   institute = "institute",
-  educator = "user",
+  educator = "educator",
   publisher = "publisher",
   admin = "admin",
 }

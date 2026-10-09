@@ -23,24 +23,6 @@ const create = {
     role: Joi.string()
       .valid(...Object.values(ROLE))
       .required(),
-    language: Joi.string(),
-    targetExam: Joi.string(),
-    stage: Joi.string(),
-    optionalSubject: Joi.string(),
-    bio: Joi.string(),
-    specializations: Joi.array().items(Joi.string()),
-    experience: Joi.number().min(0),
-    instituteName: Joi.string().when("role", {
-      is: ROLE.institute,
-      then: Joi.required(),
-      otherwise: Joi.optional(),
-    }),
-    publisherName: Joi.string().when("role", {
-      is: ROLE.publisher,
-      then: Joi.required(),
-      otherwise: Joi.optional(),
-    }),
-    description: Joi.string(),
   }),
 };
 
@@ -55,6 +37,10 @@ const update = {
     city: Joi.string().allow(""),
     country: Joi.string().allow(""),
     phone: Joi.string().allow(""),
+    password: Joi.string().min(8).required(),
+    role: Joi.string()
+      .valid(...Object.values(ROLE))
+      .required(),
   }),
 };
 

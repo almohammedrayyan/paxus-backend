@@ -81,7 +81,7 @@ const objectId = Joi.string()
 // schemas
 const login = {
   body: Joi.object().keys({
-    emailId: Joi.string().required(),
+    email: Joi.string().required(),
     password: Joi.string().required(),
   }),
 };

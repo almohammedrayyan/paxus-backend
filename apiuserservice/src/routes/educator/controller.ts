@@ -18,7 +18,21 @@ const createEducatorProfile = async (req: Request, res: Response) => {
     onSend_CatchResponse(res);
   }
 };
+const getById = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params._id as string;
+    const data = await service.getById(userId);
 
+    return res.status(httpStatus.OK).send({
+      message: apiMessage.success,
+      success: true,
+      data,
+    });
+  } catch (error) {
+    onSend_CatchResponse(res);
+  }
+};
 export = {
   createEducatorProfile,
+  getById,
 };

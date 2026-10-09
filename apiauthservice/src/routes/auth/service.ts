@@ -11,7 +11,7 @@ import UserModel from "../../model/UserModel";
 
 const getByEmailId = async (emailId: string) => {
   const data = await UserModel.findOne({
-    emailId: emailId.toLocaleLowerCase(),
+    email: emailId.toLocaleLowerCase(),
   });
 
   if (!data) {

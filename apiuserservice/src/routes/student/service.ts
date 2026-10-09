@@ -17,6 +17,18 @@ const createStudentProfile = async (body: any) => {
   return data;
 };
 
+const getById = async (userId: string) => {
+  const data = await StudentModel.findOne({ userId }).populate({
+    path: "userId",
+  });
+
+  if (!data) {
+    throw new Error("User not found");
+  }
+
+  return data;
+};
 export = {
   createStudentProfile,
+  getById,
 };

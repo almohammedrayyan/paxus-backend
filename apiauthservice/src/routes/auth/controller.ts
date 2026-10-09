@@ -23,9 +23,9 @@ import {
 // create
 const login = async (req: Request, res: Response) => {
   try {
-    const { emailId, password } = req.body;
+    const { email, password } = req.body;
 
-    const data = await service.getByEmailId(emailId);
+    const data = await service.getByEmailId(email);
 
     if (!data?._id) {
       return res.status(httpStatus.ACCEPTED).send({
