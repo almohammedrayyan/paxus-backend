@@ -28,7 +28,7 @@ const schema = new mongoose.Schema(
     duration: { type: String },
     lessons: { type: Number },
     thumbnail: { type: String },
-    featured: { type: Boolean, default: false },
+    featured: { type: Boolean, default: true },
     tags: [{ type: String }],
     status: {
       type: Boolean,

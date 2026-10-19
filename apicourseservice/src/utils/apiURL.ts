@@ -8,9 +8,9 @@
 // URL's
 const END_POINT = {
   create: "/create",
-  getById: "/getById/:_id",
+  getById: "/getById/:id",
   update: "/update",
-  delete: "/delete/:_id",
+  delete: "/delete/:id",
   getAll: "/get-all",
   applyCourse: "/apply-course/:id",
 };

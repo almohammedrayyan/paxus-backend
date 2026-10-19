@@ -28,15 +28,14 @@ const create = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    onSend_CatchResponse(res);
+    onSend_CatchResponse(res, error);
   }
 };
 
 // update
 const update = async (req: Request, res: Response) => {
   try {
-    const { body } = req;
-    const _id = req.params.id as string;
+    const { _id, ...body } = req.body;
 
     const data = await service.update(_id, body);
 
@@ -46,7 +45,7 @@ const update = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    onSend_CatchResponse(res);
+    onSend_CatchResponse(res, error);
   }
 };
 
@@ -61,7 +60,7 @@ const getAll = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    onSend_CatchResponse(res);
+    onSend_CatchResponse(res, error);
   }
 };
 
@@ -77,7 +76,7 @@ const getById = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    onSend_CatchResponse(res);
+    onSend_CatchResponse(res, error);
   }
 };
 
@@ -93,7 +92,7 @@ const deleteById = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    onSend_CatchResponse(res);
+    onSend_CatchResponse(res, error);
   }
 };
 
@@ -110,7 +109,7 @@ const applyCourse = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    onSend_CatchResponse(res);
+    onSend_CatchResponse(res, error);
   }
 };
 // exports

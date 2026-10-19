@@ -27,7 +27,7 @@ route.get(
 route.put(END_POINT.update, validateSchema(schema.update), controller.update);
 route.get(END_POINT.getAll, controller.getAll);
 route.delete(
-  END_POINT.getAll,
+  END_POINT.delete,
   validateSchema(schema.deleteById),
   controller.deleteById,
 );

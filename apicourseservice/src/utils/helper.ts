@@ -10,18 +10,19 @@ import { Response } from "express";
 import httpStatus from "http-status";
 
 // import utils
-import ApiError from "./apiError";
 import { apiMessage } from "./apiMessage";
 
 // helper functions
-const onSend_CatchResponse = (res: Response) => {
-  res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
-    message: apiMessage.somethingWentWrong,
+const onSend_CatchResponse = (res: Response, error: any) => {
+  const statusCode =
+    typeof error?.statusCode === "number"
+      ? error.statusCode
+      : httpStatus.INTERNAL_SERVER_ERROR;
+
+  res.status(statusCode).send({
+    message: error?.message || apiMessage.somethingWentWrong,
     success: false,
-    data: new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      apiMessage.somethingWentWrong,
-    ),
+    data: null,
   });
 };
 
