@@ -46,10 +46,10 @@ const update = {
     price: Joi.number().min(0),
     originalPrice: Joi.number().min(0),
     duration: Joi.string().allow(""),
-    lessons: Joi.number().integer().min(0),
-    thumbnail: Joi.string().allow(""),
+    // lessons: Joi.number().integer().min(0),
+    // thumbnail: Joi.string().allow(""),
     featured: Joi.boolean(),
-    tags: Joi.array().items(Joi.string()),
+    // tags: Joi.array().items(Joi.string()),
   }),
 };
 

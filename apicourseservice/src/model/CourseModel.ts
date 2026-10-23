@@ -24,6 +24,7 @@ const schema = new mongoose.Schema(
     studentsEnrolled: [
       { type: mongoose.Schema.Types.ObjectId, ref: "usermodels" },
     ],
+    totalRevenue: { type: Number, default: 0, min: 0 },
 
     duration: { type: String },
     lessons: { type: Number },

@@ -137,11 +137,28 @@ const applyCourse = async (_id: string, body: { userId: string }) => {
     throw new Error("User ID is required");
   }
 
+  const existingCourse = await CourseModel.findById(_id);
+
+  if (!existingCourse) {
+    throw new Error("Course not found");
+  }
+
+  const coursePrice = Number(existingCourse.price) || 0;
+  const isAlreadyEnrolled = existingCourse.studentsEnrolled.some(
+    (studentId: any) => studentId.toString() === userId,
+  );
+  console.log(coursePrice, "----->1");
+  // Revenue is derived from the enrolled list, which also repairs older
+  // documents that did not have totalRevenue when they were first created.
+  const enrolledCount =
+    existingCourse.studentsEnrolled.length + (isAlreadyEnrolled ? 0 : 1);
   const course = await CourseModel.findByIdAndUpdate(
     _id,
     {
-      $set: { paid: "yes" },
-      $addToSet: { studentsEnrolled: userId },
+      $addToSet: {
+        studentsEnrolled: userId,
+        totalRevenue: enrolledCount * coursePrice,
+      },
     },
     { new: true, runValidators: true },
   );
@@ -154,11 +171,11 @@ const applyCourse = async (_id: string, body: { userId: string }) => {
 
   if (course.providerType === "institute") {
     await InstituteModel.findByIdAndUpdate(course.providerId, {
-      $set: { studentsCount },
+      $addToSet: { studentsCount },
     });
   } else if (course.providerType === "educator") {
     await EducatorModel.findByIdAndUpdate(course.providerId, {
-      $set: { studentsCount },
+      $addToSet: { studentsCount },
     });
   } else {
     throw new Error("Invalid course provider type");
