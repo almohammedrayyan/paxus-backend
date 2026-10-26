@@ -88,6 +88,19 @@ const create = async (body: any) => {
 
 // update
 const update = async (_id: string, body: any) => {
+  if (body.price !== undefined) {
+    const existingCourse = await CourseModel.findById(_id).select(
+      "studentsEnrolled",
+    );
+
+    if (!existingCourse) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Course not found");
+    }
+
+    body.totalRevenue =
+      existingCourse.studentsEnrolled.length * (Number(body.price) || 0);
+  }
+
   const data = await CourseModel.findByIdAndUpdate(
     _id,
     { $set: body },
@@ -114,9 +127,26 @@ const deleteById = async (_id: string) => {
 
 // get all
 const getAll = async () => {
-  const data = await CourseModel.find();
+  const courses = await CourseModel.find();
+  const data = courses.map((course: any) => {
+    const totalRevenue =
+      (Array.isArray(course.studentsEnrolled)
+        ? course.studentsEnrolled.length
+        : 0) * (Number(course.price) || 0);
 
-  return data;
+    return {
+      ...course.toObject(),
+      totalRevenue,
+    };
+  });
+
+  const totalRevenue = data.reduce(
+    (sum: number, course: { totalRevenue: number }) =>
+      sum + course.totalRevenue,
+    0,
+  );
+
+  return { courses: data, totalRevenue };
 };
 
 // get by id
@@ -147,7 +177,6 @@ const applyCourse = async (_id: string, body: { userId: string }) => {
   const isAlreadyEnrolled = existingCourse.studentsEnrolled.some(
     (studentId: any) => studentId.toString() === userId,
   );
-  console.log(coursePrice, "----->1");
   // Revenue is derived from the enrolled list, which also repairs older
   // documents that did not have totalRevenue when they were first created.
   const enrolledCount =
@@ -157,8 +186,8 @@ const applyCourse = async (_id: string, body: { userId: string }) => {
     {
       $addToSet: {
         studentsEnrolled: userId,
-        totalRevenue: enrolledCount * coursePrice,
       },
+      $set: { totalRevenue: enrolledCount * coursePrice },
     },
     { new: true, runValidators: true },
   );
