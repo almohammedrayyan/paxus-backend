@@ -28,5 +28,10 @@ route.get(
   validateSchema(schema.getById),
   controller.getById,
 );
+route.put(
+  END_POINT.update,
+  validateSchema(schema.update),
+  controller.updateEducatorProfile,
+);
 // exports
 export default route;

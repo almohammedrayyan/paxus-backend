@@ -32,7 +32,23 @@ const getById = async (req: Request, res: Response) => {
     onSend_CatchResponse(res);
   }
 };
+
+const updateEducatorProfile = async (req: Request, res: Response) => {
+  try {
+    const { userId, ...body } = req.body;
+    const data = await service.updateEducatorProfile(userId, body);
+
+    return res.status(httpStatus.OK).send({
+      message: apiMessage.success,
+      success: true,
+      data,
+    });
+  } catch (error) {
+    onSend_CatchResponse(res);
+  }
+};
 export = {
   createEducatorProfile,
   getById,
+  updateEducatorProfile,
 };

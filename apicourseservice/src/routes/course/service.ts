@@ -8,10 +8,67 @@
 import CourseModel from "../../model/CourseModel";
 import EducatorModel from "../../model/EducatorModel";
 import InstituteModel from "../../model/InstituteModel";
+import StudentModel from "../../model/StudentModel";
 import httpStatus from "http-status";
 import ApiError from "../../utils/apiError";
 
 // import model
+
+type ProviderType = "institute" | "educator";
+
+/**
+ * Keep the provider dashboard counters derived from the source of truth.
+ * `providerId` on courses is the user's id, not the institute/educator
+ * document `_id`, so provider profiles must be found by `userId`.
+ */
+const syncProviderCounts = async (
+  providerType: ProviderType,
+  providerId: string,
+) => {
+  const providerCourses = await CourseModel.find({ providerType, providerId })
+    .select("studentsEnrolled")
+    .lean();
+
+  const uniqueStudentIds = new Set<string>();
+  providerCourses.forEach((course: any) => {
+    course.studentsEnrolled?.forEach((studentId: any) => {
+      uniqueStudentIds.add(studentId.toString());
+    });
+  });
+
+  const counts = {
+    coursesCount: providerCourses.length,
+    studentsCount: uniqueStudentIds.size,
+  };
+
+  // Older courses may store the provider profile `_id`, whereas newly created
+  // courses store the provider user's id. Support both representations.
+  const providerFilter = {
+    $or: [{ userId: providerId }, { _id: providerId }],
+  };
+
+  let provider;
+
+  if (providerType === "institute") {
+    provider = await InstituteModel.findOneAndUpdate(
+      providerFilter,
+      { $set: counts },
+      { new: true, runValidators: true },
+    );
+  } else {
+    provider = await EducatorModel.findOneAndUpdate(
+      providerFilter,
+      { $set: counts },
+      { new: true, runValidators: true },
+    );
+  }
+
+  if (!provider) {
+    throw new Error(
+      `Unable to find the ${providerType} profile for course provider ${providerId}`,
+    );
+  }
+};
 
 // create
 const create = async (body: any) => {
@@ -83,15 +140,16 @@ const create = async (body: any) => {
     provider: providerName,
   });
 
+  await syncProviderCounts(providerType, providerId);
+
   return course;
 };
 
 // update
 const update = async (_id: string, body: any) => {
   if (body.price !== undefined) {
-    const existingCourse = await CourseModel.findById(_id).select(
-      "studentsEnrolled",
-    );
+    const existingCourse =
+      await CourseModel.findById(_id).select("studentsEnrolled");
 
     if (!existingCourse) {
       throw new ApiError(httpStatus.NOT_FOUND, "Course not found");
@@ -120,6 +178,10 @@ const deleteById = async (_id: string) => {
 
   if (!data) {
     throw new Error("Course not found");
+  }
+
+  if (data.providerType === "institute" || data.providerType === "educator") {
+    await syncProviderCounts(data.providerType, data.providerId);
   }
 
   return data;
@@ -173,6 +235,13 @@ const applyCourse = async (_id: string, body: { userId: string }) => {
     throw new Error("Course not found");
   }
 
+  // Validate the student before changing the course document so an invalid
+  // student id cannot create a partial enrollment.
+  const studentProfile = await StudentModel.exists({ userId });
+  if (!studentProfile) {
+    throw new Error("Student profile not found");
+  }
+
   const coursePrice = Number(existingCourse.price) || 0;
   const isAlreadyEnrolled = existingCourse.studentsEnrolled.some(
     (studentId: any) => studentId.toString() === userId,
@@ -196,19 +265,22 @@ const applyCourse = async (_id: string, body: { userId: string }) => {
     throw new Error("Course not found");
   }
 
-  const studentsCount = course.studentsEnrolled.length;
+  // `courseId` is the public course identifier (for example, "crs-01").
+  // $addToSet keeps repeat apply requests idempotent.
+  await StudentModel.updateOne(
+    { userId },
+    { $addToSet: { enrolledCourses: course.courseId } },
+    { runValidators: true },
+  );
 
-  if (course.providerType === "institute") {
-    await InstituteModel.findByIdAndUpdate(course.providerId, {
-      $addToSet: { studentsCount },
-    });
-  } else if (course.providerType === "educator") {
-    await EducatorModel.findByIdAndUpdate(course.providerId, {
-      $addToSet: { studentsCount },
-    });
-  } else {
+  if (
+    course.providerType !== "institute" &&
+    course.providerType !== "educator"
+  ) {
     throw new Error("Invalid course provider type");
   }
+
+  await syncProviderCounts(course.providerType, course.providerId);
 
   return course;
 };

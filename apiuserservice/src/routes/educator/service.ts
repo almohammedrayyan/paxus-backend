@@ -30,7 +30,25 @@ const getById = async (userId: string) => {
   return data;
 };
 
+const updateEducatorProfile = async (
+  userId: string,
+  body: { bio?: string; specializations?: string[]; experience?: number },
+) => {
+  const data = await EducatorModel.findOneAndUpdate(
+    { userId },
+    { $set: body },
+    { new: true, runValidators: true },
+  ).populate({ path: "userId" });
+
+  if (!data) {
+    throw new Error("Educator profile not found");
+  }
+
+  return data;
+};
+
 export = {
   createEducatorProfile,
   getById,
+  updateEducatorProfile,
 };

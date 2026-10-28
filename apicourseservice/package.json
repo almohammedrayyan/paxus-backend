@@ -6,7 +6,7 @@
   "scripts": {
     "start-build": "node dist/index.js",
     "start": "npm run build && node dist/index.js",
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "nodemon",
     "build": "tsc",
     "seed:dev-admin": "ts-node --transpile-only scripts/seedDevAdmin.ts",
     "test": "echo \"Error: no test specified\" && exit 1",

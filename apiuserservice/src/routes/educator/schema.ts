@@ -20,7 +20,17 @@ const getById = {
   }),
 };
 
+const update = {
+  body: Joi.object().keys({
+    userId: Joi.string().hex().length(24).required(),
+    bio: Joi.string().trim().allow(""),
+    specializations: Joi.array().items(Joi.string().trim()).max(20),
+    experience: Joi.number().integer().min(0),
+  }).min(2),
+};
+
 export = {
   create,
   getById,
+  update,
 };
