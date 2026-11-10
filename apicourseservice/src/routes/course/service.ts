@@ -188,8 +188,17 @@ const deleteById = async (_id: string) => {
 };
 
 // get all
-const getAll = async () => {
-  const courses = await CourseModel.find();
+const getAll = async (scope?: {
+  providerType?: ProviderType;
+  providerId?: string;
+}) => {
+  // Marketplace callers omit the scope and receive all published courses.
+  // Provider dashboards send both values and receive only their own content.
+  const filter =
+    scope?.providerType && scope.providerId
+      ? { providerType: scope.providerType, providerId: scope.providerId }
+      : {};
+  const courses = await CourseModel.find(filter);
   const data = courses.map((course: any) => {
     const totalRevenue =
       (Array.isArray(course.studentsEnrolled)

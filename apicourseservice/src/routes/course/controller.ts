@@ -52,7 +52,15 @@ const update = async (req: Request, res: Response) => {
 // get all
 const getAll = async (req: Request, res: Response) => {
   try {
-    const data = await service.getAll();
+    const providerType = req.query.providerType;
+    const providerId = req.query.providerId;
+    const data = await service.getAll({
+      providerType:
+        providerType === "educator" || providerType === "institute"
+          ? providerType
+          : undefined,
+      providerId: typeof providerId === "string" ? providerId : undefined,
+    });
 
     return res.status(httpStatus.OK).send({
       message: apiMessage.success,
